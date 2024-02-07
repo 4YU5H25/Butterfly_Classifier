@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:tflite/tflite.dart';
+import 'imagepicker.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -56,10 +57,7 @@ class HomeScreenState extends State<HomeScreen> {
         ),
         body: Container(
           decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/bg.jpg'),
-              fit: BoxFit.cover,
-            ),
+            color: Color.fromARGB(255, 44, 43, 43),
           ),
           child: Stack(
             alignment: Alignment.bottomCenter,
@@ -122,7 +120,7 @@ class HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: () async {
                       selectedImagePath =
-                          await selectImageFromCamera() as String;
+                          await Media.selectImageFromCamera() as String;
                       _showImageSelectionDialog();
                       setState(() {});
                     },
@@ -132,7 +130,7 @@ class HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: () async {
                       selectedImagePath =
-                          await selectImageFromGallery() as String;
+                          await Media.selectImageFromGallery() as String;
                       _showImageSelectionDialog();
                       setState(() {});
                     },
@@ -144,22 +142,17 @@ class HomeScreenState extends State<HomeScreen> {
                 children: recognitions.map((result) {
                   int labelIndex = result['index'];
                   String className = labelList[labelIndex];
-                  // double confidence = result['confidence'];
-
+                  double confidence = result['confidence'];
                   return Column(
                     children: [
                       Text(
-                        'Prediction: $className',
+                        'Prediction: $className $confidence %',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Color.fromARGB(0, 239, 215, 137),
+                          color: Color.fromARGB(0, 255, 252, 243),
                         ),
                       ),
-                      // Text(
-                      //   'Confidence: $confidence',
-                      //   style: const TextStyle(fontSize: 16),
-                      // ),
                     ],
                   );
                 }).toList(),
@@ -171,17 +164,7 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<String?> selectImageFromGallery() async {
-    XFile? file = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 10);
-    return file?.path;
-  }
 
-  Future<String?> selectImageFromCamera() async {
-    XFile? file = await ImagePicker()
-        .pickImage(source: ImageSource.camera, imageQuality: 10);
-    return file?.path;
-  }
 
   Future<void> _showImageSelectionDialog() async {
     await showDialog(
